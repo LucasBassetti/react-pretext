@@ -4,12 +4,14 @@ import { BasicDemo } from "./pages/Basic.tsx";
 import { CanvasDemo } from "./pages/CanvasDemo.tsx";
 import { ChatDemo } from "./pages/ChatDemo.tsx";
 import { DebugDemo } from "./pages/DebugDemo.tsx";
+import { MasonryDemo } from "./pages/MasonryDemo.tsx";
 
 const PAGES = {
 	basic: { label: "Basic", component: BasicDemo },
 	chat: { label: "Chat UI", component: ChatDemo },
 	canvas: { label: "Canvas", component: CanvasDemo },
 	debug: { label: "Debug Mode", component: DebugDemo },
+	masonry: { label: "Masonry", component: MasonryDemo },
 } as const;
 
 type PageKey = keyof typeof PAGES;

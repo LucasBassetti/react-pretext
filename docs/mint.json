@@ -1,0 +1,61 @@
+{
+  "$schema": "https://mintlify.com/schema.json",
+  "name": "react-pretext",
+  "theme": "venus",
+  "favicon": "/react-pretext.svg",
+  "logo": {
+    "light": "/react-pretext.svg",
+    "dark": "/react-pretext-dark.svg"
+  },
+  "colors": {
+    "primary": "#0D9373",
+    "light": "#07C983",
+    "dark": "#0D9373"
+  },
+  "topbarLinks": [
+    {
+      "name": "GitHub",
+      "url": "https://github.com/chenglou/pretext"
+    }
+  ],
+  "anchors": [
+    {
+      "name": "npm",
+      "icon": "npm",
+      "url": "https://www.npmjs.com/package/react-pretext"
+    }
+  ],
+  "navigation": [
+    {
+      "group": "Getting Started",
+      "pages": ["introduction", "quickstart"]
+    },
+    {
+      "group": "API Reference",
+      "pages": [
+        "api/components",
+        "api/hooks",
+        "api/core-functions",
+        "api/renderers",
+        "api/types"
+      ]
+    },
+    {
+      "group": "Guides",
+      "pages": [
+        "guides/performance",
+        "guides/ssr"
+      ]
+    },
+    {
+      "group": "Examples",
+      "pages": [
+        "examples/chat-ui",
+        "examples/canvas-rendering",
+        "examples/responsive-layout",
+        "examples/debug-overlay",
+        "examples/font-loading"
+      ]
+    }
+  ]
+}

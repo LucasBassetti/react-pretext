@@ -1,0 +1,189 @@
+---
+title: Types
+description: TypeScript interfaces exported by react-pretext
+---
+
+All types are importable from `react-pretext`:
+
+```ts
+import type { PretextLayoutResult, PretextLineInfo } from "react-pretext";
+```
+
+---
+
+## PretextLayoutOptions
+
+Options for `computeLayout` and `computeHeight`.
+
+```ts
+interface PretextLayoutOptions {
+  text: string;
+  font: string;
+  maxWidth: number;
+  lineHeight: number;
+  locale?: string;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `text` | `string` | Text content to lay out |
+| `font` | `string` | CSS font shorthand (e.g. `"16px Inter"`) |
+| `maxWidth` | `number` | Maximum width in pixels for line breaking |
+| `lineHeight` | `number` | Line height in pixels |
+| `locale` | `string?` | Locale for text segmentation |
+
+---
+
+## PretextLayoutResult
+
+Returned by `computeLayout` and `usePretextLayout`.
+
+```ts
+interface PretextLayoutResult {
+  height: number;
+  lineCount: number;
+  lines: PretextLineInfo[];
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `height` | `number` | Total block height in pixels (`lineCount * lineHeight`) |
+| `lineCount` | `number` | Number of wrapped lines |
+| `lines` | `PretextLineInfo[]` | Per-line layout details |
+
+---
+
+## PretextLineInfo
+
+Details for a single line within a layout result.
+
+```ts
+interface PretextLineInfo {
+  key: string;
+  text: string;
+  width: number;
+  y: number;
+  index: number;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `key` | `string` | Stable key for React list rendering |
+| `text` | `string` | Text content of the line |
+| `width` | `number` | Measured line width in pixels |
+| `y` | `number` | Vertical offset from the top of the layout block |
+| `index` | `number` | Zero-based line index |
+
+---
+
+## PretextConfig
+
+Configuration provided by `Pretext.Provider`.
+
+```ts
+interface PretextConfig {
+  font: string;
+  lineHeight: number;
+  locale?: string;
+  debug?: boolean;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `font` | `string` | CSS font shorthand |
+| `lineHeight` | `number` | Line height in pixels |
+| `locale` | `string?` | Locale for text segmentation |
+| `debug` | `boolean?` | Enable debug overlays |
+
+---
+
+## PretextVirtualizerOptions
+
+Options for `usePretextVirtualizer`.
+
+```ts
+interface PretextVirtualizerOptions {
+  items: ReadonlyArray<{ text: string; font?: string }>;
+  width: number;
+  lineHeight: number;
+  scrollTop: number;
+  viewportHeight: number;
+  overscan?: number;
+  font?: string;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `items` | `ReadonlyArray<{ text: string; font?: string }>` | Items to virtualize |
+| `width` | `number` | Container width in pixels |
+| `lineHeight` | `number` | Line height in pixels |
+| `scrollTop` | `number` | Current scroll position |
+| `viewportHeight` | `number` | Visible viewport height |
+| `overscan` | `number?` | Extra items above/below viewport (default: 3) |
+| `font` | `string?` | Default font for items without a per-item font |
+
+---
+
+## PretextVirtualizerResult
+
+Returned by `usePretextVirtualizer`.
+
+```ts
+interface PretextVirtualizerResult {
+  virtualItems: VirtualItem[];
+  totalHeight: number;
+  startIndex: number;
+  endIndex: number;
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `virtualItems` | `VirtualItem[]` | Items in the visible range (plus overscan) |
+| `totalHeight` | `number` | Total scrollable height |
+| `startIndex` | `number` | First visible item index |
+| `endIndex` | `number` | Last visible item index |
+
+---
+
+## VirtualItem
+
+A single item in the virtualized list.
+
+```ts
+interface VirtualItem {
+  index: number;
+  key: string;
+  offsetTop: number;
+  height: number;
+  data: { text: string; font?: string };
+}
+```
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `index` | `number` | Index in the original items array |
+| `key` | `string` | Stable key for React rendering |
+| `offsetTop` | `number` | Vertical offset from the top of the scroll container |
+| `height` | `number` | Computed height of this item |
+| `data` | `{ text: string; font?: string }` | Reference to the original item data |
+
+---
+
+## Re-exported from @chenglou/pretext
+
+These types are re-exported for convenience:
+
+- `PreparedText` — result of `prepare()`
+- `PreparedTextWithSegments` — result of `prepareWithSegments()`
+- `LayoutLine` — a line from the upstream layout engine
+- `LayoutCursor` — cursor position in text
+- `LayoutResult` — result of upstream `layout()`
+- `LayoutLinesResult` — result of upstream `layoutWithLines()`
+
+See the [@chenglou/pretext documentation](https://github.com/chenglou/pretext) for details on these types.
