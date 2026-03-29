@@ -1,0 +1,102 @@
+---
+title: Quickstart
+description: Install react-pretext and render your first text layout
+---
+
+## Installation
+
+<CodeGroup>
+```bash pnpm
+pnpm install react-pretext
+```
+
+```bash npm
+npm install react-pretext
+```
+
+```bash yarn
+yarn add react-pretext
+```
+</CodeGroup>
+
+**Peer dependencies:** `react >= 18.0.0`, `react-dom >= 18.0.0`
+
+## First Layout
+
+The simplest way to use react-pretext is with the compound `Pretext` component:
+
+```tsx
+import { Pretext } from "react-pretext";
+
+function App() {
+  return (
+    <Pretext.Root text="Hello world" width={300} font="16px Inter" lineHeight={24}>
+      <Pretext.Lines>
+        {(line) => <div key={line.key}>{line.text}</div>}
+      </Pretext.Lines>
+    </Pretext.Root>
+  );
+}
+```
+
+`Pretext.Root` computes the layout (line breaks, heights, widths) and makes it available to `Pretext.Lines`, which iterates over each line and calls your render function.
+
+## Using a Provider
+
+If you have multiple text blocks sharing the same font settings, wrap them in a `Pretext.Provider`:
+
+```tsx
+import { Pretext } from "react-pretext";
+
+function App() {
+  return (
+    <Pretext.Provider font="16px Inter" lineHeight={24}>
+      <Pretext.Root text="First paragraph" width={300}>
+        <Pretext.Lines>
+          {(line) => <div key={line.key}>{line.text}</div>}
+        </Pretext.Lines>
+      </Pretext.Root>
+
+      <Pretext.Root text="Second paragraph" width={300}>
+        <Pretext.Lines>
+          {(line) => <div key={line.key}>{line.text}</div>}
+        </Pretext.Lines>
+      </Pretext.Root>
+    </Pretext.Provider>
+  );
+}
+```
+
+## Using the Hook Directly
+
+For more control, use the `usePretextLayout` hook:
+
+```tsx
+import { usePretextLayout } from "react-pretext";
+
+function TextBlock({ text, width }: { text: string; width: number }) {
+  const layout = usePretextLayout({
+    text,
+    maxWidth: width,
+    font: "16px Inter",
+    lineHeight: 24,
+  });
+
+  return (
+    <div style={{ height: layout.height }}>
+      {layout.lines.map((line) => (
+        <div key={line.key} style={{ position: "absolute", top: line.y }}>
+          {line.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+```
+
+## Next Steps
+
+- [Components](/api/components) — compound component API
+- [Hooks](/api/hooks) — `usePretextLayout`, `usePretextVirtualizer`, and more
+- [Renderers](/api/renderers) — DOM, SVG, and Canvas renderers
+- [Examples](/guides/examples) — complete scenarios (chat UI, canvas, responsive layout)
