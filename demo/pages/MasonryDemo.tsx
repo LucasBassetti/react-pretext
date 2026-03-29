@@ -26,10 +26,7 @@ interface MasonryLayout {
 	cards: PositionedCard[];
 }
 
-function computeMasonryLayout(
-	texts: string[],
-	containerWidth: number,
-): MasonryLayout {
+function computeMasonryLayout(texts: string[], containerWidth: number): MasonryLayout {
 	if (containerWidth <= 0) {
 		return { colWidth: 0, totalHeight: 0, cards: [] };
 	}
@@ -148,7 +145,7 @@ export function MasonryDemo() {
 			<h2 style={{ margin: "0 0 12px" }}>
 				Masonry — {showerThoughts.length.toLocaleString()} cards
 			</h2>
-			<div style={{ fontSize: 12, color: "#888", marginBottom: 12 }}>
+			<div style={{ fontSize: 12, color: "var(--color-text-muted)", marginBottom: 12 }}>
 				Rendering {visibleCards.length} of {showerThoughts.length.toLocaleString()} cards
 				{" | "}Total height: {Math.round(layoutResult.totalHeight).toLocaleString()}px
 				{" | "}Column width: {Math.round(layoutResult.colWidth)}px
@@ -160,7 +157,7 @@ export function MasonryDemo() {
 				style={{
 					height: VIEWPORT_HEIGHT,
 					overflow: "auto",
-					background: "#f0f0f0",
+					background: "var(--color-bg-secondary)",
 					borderRadius: 8,
 				}}
 			>
@@ -172,7 +169,7 @@ export function MasonryDemo() {
 						fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
 						fontSize: 15,
 						lineHeight: "22px",
-						color: "#333",
+						color: "var(--color-text)",
 					}}
 				>
 					{visibleCards.map((card) => (
@@ -184,9 +181,10 @@ export function MasonryDemo() {
 								top: card.y,
 								width: card.width,
 								height: card.height,
-								background: "white",
+								background: "var(--color-surface)",
 								borderRadius: 8,
 								padding: CARD_PADDING,
+								border: "1px solid var(--color-border)",
 								boxShadow: "0 1px 3px rgba(0,0,0,0.08)",
 								overflow: "hidden",
 								boxSizing: "border-box",

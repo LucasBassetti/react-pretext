@@ -87,7 +87,7 @@ export function ChatDemo() {
 						style={{ display: "block", width: "100%" }}
 					/>
 				</label>
-				<div style={{ fontSize: 12, color: "#888", marginTop: 4 }}>
+				<div style={{ fontSize: 12, color: "var(--color-text-muted)", marginTop: 4 }}>
 					Rendering {result.virtualItems.length} of {MESSAGES.length.toLocaleString()} items
 					{" | "}Total height: {result.totalHeight.toLocaleString()}px
 					{" | "}Visible range: [{result.startIndex}..{result.endIndex}]
@@ -101,9 +101,9 @@ export function ChatDemo() {
 					width,
 					height: VIEWPORT_HEIGHT,
 					overflow: "auto",
-					border: "1px solid #e0e0e0",
+					border: "1px solid var(--color-border)",
 					borderRadius: 4,
-					background: "#fafafa",
+					background: "var(--color-surface)",
 				}}
 			>
 				<div style={{ height: result.totalHeight, position: "relative" }}>
@@ -116,7 +116,7 @@ export function ChatDemo() {
 								left: 0,
 								right: 0,
 								padding: "8px 16px",
-								borderBottom: "1px solid #eee",
+								borderBottom: "1px solid var(--color-border-light)",
 							}}
 						>
 							<MessageItem text={item.data.text} width={contentWidth} />

@@ -35,11 +35,13 @@ export function BasicDemo() {
 							display: "block",
 							width: "100%",
 							padding: 8,
-							border: "1px solid #ccc",
+							border: "1px solid var(--color-border)",
 							borderRadius: 4,
 							fontFamily: "inherit",
 							fontSize: 14,
 							resize: "vertical",
+							background: "var(--color-surface)",
+							color: "var(--color-text)",
 						}}
 					/>
 				</label>
@@ -50,11 +52,11 @@ export function BasicDemo() {
 				ref={containerRef}
 				style={{
 					width,
-					border: "1px solid #e0e0e0",
+					border: "1px solid var(--color-border)",
 					borderRadius: 4,
 					padding: 12,
 					marginBottom: 16,
-					background: "#fafafa",
+					background: "var(--color-surface)",
 				}}
 			>
 				<Pretext.Root text={text} width={Math.max(0, width - 24)}>
@@ -72,16 +74,22 @@ export function BasicDemo() {
 			<div
 				style={{
 					width,
-					border: "1px solid #e0e0e0",
+					border: "1px solid var(--color-border)",
 					borderRadius: 4,
 					padding: 12,
-					background: "#fafafa",
+					background: "var(--color-surface)",
 				}}
 			>
 				<Pretext.Root text={text} width={Math.max(0, width - 24)}>
 					{(layout) => (
 						<div>
-							<div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>
+							<div
+								style={{
+									fontSize: 12,
+									color: "var(--color-text-muted)",
+									marginBottom: 8,
+								}}
+							>
 								{layout.lineCount} lines / {layout.height}px height
 								{containerSize.width > 0 && ` / container: ${Math.round(containerSize.width)}px`}
 							</div>
