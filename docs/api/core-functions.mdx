@@ -1,0 +1,117 @@
+---
+title: Core Functions
+description: Standalone layout computation with no React dependency
+---
+
+These functions can be used outside of React — in Node.js scripts, build tools, or any JavaScript context.
+
+## computeLayout
+
+Full layout computation that returns line-level details. Results are cached in a global LRU cache (500 entries).
+
+```ts
+import { computeLayout } from "react-pretext";
+
+const result = computeLayout({
+  text: "Hello world, this is a long paragraph that will wrap.",
+  font: "16px Inter",
+  maxWidth: 300,
+  lineHeight: 24,
+});
+
+console.log(result.height);    // total height in px
+console.log(result.lineCount); // number of lines
+console.log(result.lines);     // array of PretextLineInfo
+```
+
+### Options
+
+<ParamField body="text" type="string" required>
+  Text content to lay out
+</ParamField>
+
+<ParamField body="font" type="string" required>
+  CSS font shorthand (e.g. `"16px Inter"`)
+</ParamField>
+
+<ParamField body="maxWidth" type="number" required>
+  Maximum width in pixels for line breaking
+</ParamField>
+
+<ParamField body="lineHeight" type="number" required>
+  Line height in pixels
+</ParamField>
+
+<ParamField body="locale" type="string">
+  Locale for text segmentation
+</ParamField>
+
+### Return Type
+
+Returns a [`PretextLayoutResult`](/api/types#pretextlayoutresult).
+
+<Note>
+  On the server (no `document`), `computeLayout` returns an estimated layout using a character-width heuristic (8px average). See [SSR](/guides/ssr) for details.
+</Note>
+
+---
+
+## computeHeight
+
+Fast path that returns only the total height. Uses `prepare()` + `layout()` instead of `prepareWithSegments()` + `layoutWithLines()` — skips line text materialization. ~10x faster than `computeLayout`. Cached separately with a 20k entry cache.
+
+```ts
+import { computeHeight } from "react-pretext";
+
+const height = computeHeight({
+  text: "Hello world",
+  font: "16px Inter",
+  maxWidth: 300,
+  lineHeight: 24,
+});
+```
+
+Takes the same options as `computeLayout`. Returns a single `number` (height in pixels).
+
+<Tip>
+  Use `computeHeight` when you only need dimensions — for example, in a virtualizer's height computation. The virtualizer uses this internally.
+</Tip>
+
+---
+
+## createCache
+
+Creates a standalone LRU cache instance. Use this if you want isolated caching separate from the global cache.
+
+```ts
+import { createCache, computeLayout } from "react-pretext";
+
+const cache = createCache(1000); // capacity of 1000 entries
+
+const result = computeLayout(
+  { text: "Hello", font: "16px Inter", maxWidth: 300, lineHeight: 24 },
+  cache,
+);
+```
+
+<ParamField body="capacity" type="number" default="500">
+  Maximum number of entries before LRU eviction
+</ParamField>
+
+**Returns:** A `LayoutCache` object with `get`, `set`, `clear`, and `size`.
+
+---
+
+## clearLayoutCache
+
+Clears the global layout cache. Call this when fonts change or when you need to free memory.
+
+```ts
+import { clearLayoutCache } from "react-pretext";
+
+clearLayoutCache();
+```
+
+<Warning>
+  This only clears the global layout cache (used by `computeLayout` and `usePretextLayout`). The height cache used by `computeHeight` is separate and not cleared by this function.
+</Warning>
