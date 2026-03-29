@@ -10,4 +10,8 @@ export default defineConfig({
 			"react-pretext": path.resolve(__dirname, "../src/index.ts"),
 		},
 	},
+	build: {
+		outDir: path.resolve(__dirname, "../dist-demo"),
+		emptyOutDir: true,
+	},
 });

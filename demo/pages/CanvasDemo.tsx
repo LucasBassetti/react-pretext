@@ -79,16 +79,18 @@ export function CanvasDemo() {
 							display: "block",
 							width: "100%",
 							padding: 8,
-							border: "1px solid #ccc",
+							border: "1px solid var(--color-border)",
 							borderRadius: 4,
 							fontFamily: "inherit",
 							fontSize: 14,
 							resize: "vertical",
+							background: "var(--color-surface)",
+							color: "var(--color-text)",
 						}}
 					/>
 				</label>
 			</div>
-			<div style={{ fontSize: 12, color: "#888", marginBottom: 8 }}>
+			<div style={{ fontSize: 12, color: "var(--color-text-muted)", marginBottom: 8 }}>
 				{layout.lineCount} lines / {layout.height}px / rendered via canvas fillText
 			</div>
 			<canvas ref={canvasRef} style={{ borderRadius: 8, display: "block" }} />

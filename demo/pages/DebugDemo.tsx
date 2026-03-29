@@ -23,7 +23,7 @@ function LayoutInspector({
 			<div
 				style={{
 					fontSize: 12,
-					color: "#888",
+					color: "var(--color-text-muted)",
 					marginBottom: 8,
 					fontFamily: "monospace",
 				}}
@@ -34,9 +34,9 @@ function LayoutInspector({
 				style={{
 					width,
 					position: "relative",
-					border: "1px solid #e0e0e0",
+					border: "1px solid var(--color-border)",
 					borderRadius: 4,
-					background: "#fafafa",
+					background: "var(--color-surface)",
 					padding: 12,
 				}}
 			>
@@ -60,7 +60,7 @@ function LayoutInspector({
 								fontSize: 10,
 								fontFamily: "monospace",
 								color: "rgba(59, 130, 246, 0.7)",
-								background: "rgba(255,255,255,0.9)",
+								background: "var(--color-surface)",
 								padding: "0 4px",
 								borderRadius: 2,
 								pointerEvents: "none",
@@ -82,7 +82,7 @@ function LayoutInspector({
 				}}
 			>
 				<thead>
-					<tr style={{ textAlign: "left", borderBottom: "1px solid #ccc" }}>
+					<tr style={{ textAlign: "left", borderBottom: "1px solid var(--color-border)" }}>
 						<th style={{ padding: "4px 8px" }}>idx</th>
 						<th style={{ padding: "4px 8px" }}>y</th>
 						<th style={{ padding: "4px 8px" }}>width</th>
@@ -91,7 +91,7 @@ function LayoutInspector({
 				</thead>
 				<tbody>
 					{layout.lines.map((line) => (
-						<tr key={line.key} style={{ borderBottom: "1px solid #eee" }}>
+						<tr key={line.key} style={{ borderBottom: "1px solid var(--color-border-light)" }}>
 							<td style={{ padding: "4px 8px" }}>{line.index}</td>
 							<td style={{ padding: "4px 8px" }}>{line.y}</td>
 							<td style={{ padding: "4px 8px" }}>{Math.round(line.width)}</td>
@@ -144,11 +144,13 @@ export function DebugDemo() {
 								display: "block",
 								width: "100%",
 								padding: 8,
-								border: "1px solid #ccc",
+								border: "1px solid var(--color-border)",
 								borderRadius: 4,
 								fontFamily: "inherit",
 								fontSize: 14,
 								resize: "vertical",
+								background: "var(--color-surface)",
+								color: "var(--color-text)",
 							}}
 						/>
 					</label>

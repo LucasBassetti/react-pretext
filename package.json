@@ -25,6 +25,7 @@
     "lint": "biome check src",
     "format": "biome format --write src",
     "dev": "vite --config demo/vite.config.ts",
+    "build:demo": "vite build --config demo/vite.config.ts",
     "docs:dev": "cd docs && mintlify dev",
     "docs:validate": "cd docs && mintlify validate"
   },
