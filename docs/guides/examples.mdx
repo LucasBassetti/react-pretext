@@ -1,0 +1,265 @@
+---
+title: Examples
+description: Complete, copy-pasteable scenarios
+---
+
+## Chat UI with Virtualization
+
+A virtualized chat interface rendering 10,000 messages with precomputed heights.
+
+```tsx
+import { useRef, useState, useCallback } from "react";
+import { usePretextVirtualizer, useResizeObserver } from "react-pretext";
+
+// Generate sample messages
+const messages = Array.from({ length: 10_000 }, (_, i) => ({
+  text: `Message ${i + 1}: ${
+    i % 3 === 0
+      ? "Short message."
+      : i % 3 === 1
+        ? "A medium-length message that spans a couple of lines when the container is narrow enough."
+        : "A longer message with more detail. This one is designed to wrap across multiple lines to demonstrate how the virtualizer handles variable-height items efficiently."
+  }`,
+}));
+
+function ChatUI() {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width } = useResizeObserver(containerRef);
+  const [scrollTop, setScrollTop] = useState(0);
+
+  const { virtualItems, totalHeight } = usePretextVirtualizer({
+    items: messages,
+    width: (width || 400) - 32, // subtract padding
+    lineHeight: 20,
+    scrollTop,
+    viewportHeight: 600,
+    overscan: 5,
+    font: "14px system-ui",
+  });
+
+  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
+    setScrollTop(e.currentTarget.scrollTop);
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      onScroll={handleScroll}
+      style={{ height: 600, overflow: "auto", border: "1px solid #ddd" }}
+    >
+      <div style={{ height: totalHeight, position: "relative" }}>
+        {virtualItems.map((item) => (
+          <div
+            key={item.key}
+            style={{
+              position: "absolute",
+              top: item.offsetTop,
+              left: 0,
+              right: 0,
+              height: item.height,
+              padding: "4px 16px",
+              borderBottom: "1px solid #eee",
+            }}
+          >
+            {item.data.text}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## Canvas Rendering
+
+Draw text directly onto a `<canvas>` element.
+
+```tsx
+import { useEffect, useRef } from "react";
+import { computeLayout, renderToCanvas } from "react-pretext";
+
+function CanvasDemo() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const text =
+    "Canvas rendering draws text using fillText for each line. " +
+    "This is useful for data visualizations, games, or any scenario " +
+    "where you need pixel-level control over text rendering.";
+
+  const font = "16px Georgia";
+  const maxWidth = 400;
+  const lineHeight = 24;
+  const padding = 16;
+
+  const layout = computeLayout({ text, font, maxWidth: maxWidth - padding * 2, lineHeight });
+
+  useEffect(() => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+
+    const canvasWidth = maxWidth;
+    const canvasHeight = layout.height + padding * 2;
+
+    // Set canvas size (accounting for device pixel ratio)
+    const dpr = window.devicePixelRatio || 1;
+    canvasRef.current!.width = canvasWidth * dpr;
+    canvasRef.current!.height = canvasHeight * dpr;
+    ctx.scale(dpr, dpr);
+
+    // Draw background
+    ctx.fillStyle = "#f8f9fa";
+    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+    // Draw text
+    renderToCanvas(ctx, layout, {
+      x: padding,
+      y: padding,
+      font,
+      color: "#1a1a1a",
+    });
+  }, [layout]);
+
+  return (
+    <canvas
+      ref={canvasRef}
+      style={{ width: maxWidth, height: layout.height + padding * 2 }}
+    />
+  );
+}
+```
+
+---
+
+## Responsive Layout
+
+Automatically re-layout text when the container resizes.
+
+```tsx
+import { useRef } from "react";
+import {
+  Pretext,
+  useResizeObserver,
+  useFontReady,
+} from "react-pretext";
+
+function ResponsiveArticle({ text }: { text: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width } = useResizeObserver(containerRef);
+  const fontReady = useFontReady("16px Inter");
+
+  return (
+    <div ref={containerRef} style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
+      {width > 0 && (
+        <Pretext.Root text={text} width={width} font="16px Inter" lineHeight={24}>
+          {(layout) => (
+            <div style={{ position: "relative", height: layout.height }}>
+              <Pretext.Lines>
+                {(line) => (
+                  <div
+                    key={line.key}
+                    style={{
+                      position: "absolute",
+                      top: line.y,
+                      left: 0,
+                      whiteSpace: "pre",
+                      opacity: fontReady ? 1 : 0.5,
+                    }}
+                  >
+                    {line.text}
+                  </div>
+                )}
+              </Pretext.Lines>
+            </div>
+          )}
+        </Pretext.Root>
+      )}
+    </div>
+  );
+}
+```
+
+---
+
+## Debug Overlay
+
+Visualize line boundaries and width measurements using the debug mode.
+
+```tsx
+import { Pretext } from "react-pretext";
+
+function DebugDemo() {
+  const text =
+    "This text has debug overlays enabled. Each line shows a red outline " +
+    "and its measured width in pixels. This is useful for verifying that " +
+    "line breaks happen where you expect them to.";
+
+  return (
+    <Pretext.Provider font="16px Inter" lineHeight={24} debug>
+      <div style={{ width: 350, border: "1px solid #ccc", padding: 8 }}>
+        <Pretext.Root text={text} width={334}>
+          <Pretext.Lines>
+            {(line) => (
+              <Pretext.Line key={line.key} line={line}>
+                {(l) => (
+                  <div style={{ position: "relative", height: 24 }}>
+                    {l.text}
+                  </div>
+                )}
+              </Pretext.Line>
+            )}
+          </Pretext.Lines>
+        </Pretext.Root>
+      </div>
+    </Pretext.Provider>
+  );
+}
+```
+
+---
+
+## Font Loading
+
+Use `useFontReady` to show a loading state while a web font loads, then re-layout with exact measurements.
+
+```tsx
+import { useFontReady, usePretextLayout } from "react-pretext";
+
+function FontAwareText({ text }: { text: string }) {
+  const font = "16px 'Playfair Display'";
+  const fallbackFont = "16px serif";
+  const ready = useFontReady(font);
+
+  const layout = usePretextLayout({
+    text,
+    maxWidth: 400,
+    font: ready ? font : fallbackFont,
+    lineHeight: 28,
+  });
+
+  return (
+    <div style={{ position: "relative", height: layout.height }}>
+      {!ready && (
+        <div style={{ position: "absolute", top: 0, right: 0, fontSize: 12, color: "#999" }}>
+          Loading font...
+        </div>
+      )}
+      {layout.lines.map((line) => (
+        <div
+          key={line.key}
+          style={{
+            position: "absolute",
+            top: line.y,
+            whiteSpace: "pre",
+            font: ready ? font : fallbackFont,
+            transition: "opacity 0.2s",
+            opacity: ready ? 1 : 0.7,
+          }}
+        >
+          {line.text}
+        </div>
+      ))}
+    </div>
+  );
+}
+```

@@ -1,0 +1,87 @@
+---
+title: Performance
+description: Caching architecture, fast paths, and optimization patterns
+---
+
+## How Layout Works
+
+Text layout in react-pretext is a two-phase process powered by `@chenglou/pretext`:
+
+1. **`prepare()`** — segments the text and measures character widths via canvas `measureText`. ~1ms for a paragraph. Results are cached internally by pretext.
+2. **`layout()`** — computes line breaks using pure arithmetic on cached widths. ~0.0002ms per text block.
+
+Because `layout()` is pure arithmetic, it's safe to call on every resize without throttling or debouncing.
+
+## Caching Architecture
+
+react-pretext maintains two separate caches:
+
+### Layout cache (500 entries)
+
+Used by `computeLayout` and `usePretextLayout`. Stores full `PretextLayoutResult` objects (lines, heights, widths). LRU eviction — when the cache is full, the least recently accessed entry is removed.
+
+```ts
+import { createCache, clearLayoutCache } from "react-pretext";
+
+// Use a custom cache with larger capacity
+const cache = createCache(2000);
+
+// Clear the global cache
+clearLayoutCache();
+```
+
+### Height cache (20,000 entries)
+
+Used by `computeHeight` and the virtualizer. Stores only the computed height (a single number). Much larger capacity because it's used for virtualized lists where you may have 10k+ items.
+
+## Fast Paths
+
+| Function | What it does | Speed |
+|----------|-------------|-------|
+| `computeLayout` | Full layout with line details | ~1ms first call, cached after |
+| `computeHeight` | Height only, skips line materialization | ~10x faster than `computeLayout` |
+
+The virtualizer uses `computeHeight` internally. If you only need to know how tall a text block is (e.g., for positioning), prefer `computeHeight`.
+
+## Hook Memoization
+
+`usePretextLayout` wraps `computeLayout` in `useMemo`. The dependency array is:
+
+```
+[text, font, maxWidth, lineHeight, locale, config?.locale]
+```
+
+If none of these change between renders, the hook returns the cached result without calling `computeLayout` at all. Combined with the LRU cache, re-renders with stable inputs are effectively free.
+
+## Virtualizer Performance
+
+`usePretextVirtualizer` precomputes heights for **all** items when `items`, `width`, `lineHeight`, or `font` changes. For 10k items, this runs once using the fast `computeHeight` path.
+
+On scroll, only a binary search + array slice happens — no layout recomputation.
+
+### Smooth Resizing
+
+For large lists, width changes trigger a full height recomputation. Use `useDeferredValue` to keep the UI responsive during resize:
+
+```tsx
+import { useDeferredValue, useState } from "react";
+import { usePretextVirtualizer } from "react-pretext";
+
+function VirtualList({ items }: { items: Array<{ text: string }> }) {
+  const [width, setWidth] = useState(500);
+  const deferredWidth = useDeferredValue(width);
+
+  const result = usePretextVirtualizer({
+    items,
+    width: deferredWidth,  // recomputation at lower priority
+    lineHeight: 24,
+    scrollTop: 0,
+    viewportHeight: 600,
+    font: "16px Inter",
+  });
+
+  // render...
+}
+```
+
+This lets React interrupt the height recomputation to handle more urgent updates (like rendering the resize animation), then finish the recomputation in a background transition.
