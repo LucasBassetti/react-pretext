@@ -11,60 +11,9 @@ Draw text directly onto a `<canvas>` element using `renderToCanvas`. This is use
 - `renderToCanvas` draws each line using `fillText`
 - Account for `devicePixelRatio` for sharp rendering on high-DPI screens
 
-## Code
+## Live Demo
 
-```tsx
-import { useEffect, useRef } from "react";
-import { computeLayout, renderToCanvas } from "react-pretext";
-
-function CanvasDemo() {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const text =
-    "Canvas rendering draws text using fillText for each line. " +
-    "This is useful for data visualizations, games, or any scenario " +
-    "where you need pixel-level control over text rendering.";
-
-  const font = "16px Georgia";
-  const maxWidth = 400;
-  const lineHeight = 24;
-  const padding = 16;
-
-  const layout = computeLayout({ text, font, maxWidth: maxWidth - padding * 2, lineHeight });
-
-  useEffect(() => {
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-
-    const canvasWidth = maxWidth;
-    const canvasHeight = layout.height + padding * 2;
-
-    // Set canvas size (accounting for device pixel ratio)
-    const dpr = window.devicePixelRatio || 1;
-    canvasRef.current!.width = canvasWidth * dpr;
-    canvasRef.current!.height = canvasHeight * dpr;
-    ctx.scale(dpr, dpr);
-
-    // Draw background
-    ctx.fillStyle = "#f8f9fa";
-    ctx.fillRect(0, 0, canvasWidth, canvasHeight);
-
-    // Draw text
-    renderToCanvas(ctx, layout, {
-      x: padding,
-      y: padding,
-      font,
-      color: "#1a1a1a",
-    });
-  }, [layout]);
-
-  return (
-    <canvas
-      ref={canvasRef}
-      style={{ width: maxWidth, height: layout.height + padding * 2 }}
-    />
-  );
-}
-```
+<a href="https://react-pretext.vercel.app/#/canvas" target="_blank">Open Canvas demo</a>
 
 ## Related
 

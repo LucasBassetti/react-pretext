@@ -11,70 +11,9 @@ A virtualized chat interface rendering 10,000 messages with precomputed heights 
 - Scroll events only trigger a binary search + array slice — no layout recomputation
 - `useResizeObserver` adapts the layout when the container width changes
 
-## Code
+## Live Demo
 
-```tsx
-import { useRef, useState, useCallback } from "react";
-import { usePretextVirtualizer, useResizeObserver } from "react-pretext";
-
-// Generate sample messages
-const messages = Array.from({ length: 10_000 }, (_, i) => ({
-  text: `Message ${i + 1}: ${
-    i % 3 === 0
-      ? "Short message."
-      : i % 3 === 1
-        ? "A medium-length message that spans a couple of lines when the container is narrow enough."
-        : "A longer message with more detail. This one is designed to wrap across multiple lines to demonstrate how the virtualizer handles variable-height items efficiently."
-  }`,
-}));
-
-function ChatUI() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width } = useResizeObserver(containerRef);
-  const [scrollTop, setScrollTop] = useState(0);
-
-  const { virtualItems, totalHeight } = usePretextVirtualizer({
-    items: messages,
-    width: (width || 400) - 32, // subtract padding
-    lineHeight: 20,
-    scrollTop,
-    viewportHeight: 600,
-    overscan: 5,
-    font: "14px system-ui",
-  });
-
-  const handleScroll = useCallback((e: React.UIEvent<HTMLDivElement>) => {
-    setScrollTop(e.currentTarget.scrollTop);
-  }, []);
-
-  return (
-    <div
-      ref={containerRef}
-      onScroll={handleScroll}
-      style={{ height: 600, overflow: "auto", border: "1px solid #ddd" }}
-    >
-      <div style={{ height: totalHeight, position: "relative" }}>
-        {virtualItems.map((item) => (
-          <div
-            key={item.key}
-            style={{
-              position: "absolute",
-              top: item.offsetTop,
-              left: 0,
-              right: 0,
-              height: item.height,
-              padding: "4px 16px",
-              borderBottom: "1px solid #eee",
-            }}
-          >
-            {item.data.text}
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-```
+<a href="https://react-pretext.vercel.app/#/chat" target="_blank">Open Chat UI demo</a>
 
 ## Related
 

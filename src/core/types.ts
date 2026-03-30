@@ -30,6 +30,10 @@ export interface PretextLayoutResult {
 	height: number;
 	lineCount: number;
 	lines: PretextLineInfo[];
+	/** CSS font shorthand used to compute this layout */
+	font: string;
+	/** Line height in pixels used to compute this layout */
+	lineHeight: number;
 }
 
 export interface PretextConfig {

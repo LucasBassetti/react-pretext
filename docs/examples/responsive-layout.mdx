@@ -11,51 +11,9 @@ Automatically re-layout text when the container resizes by combining `useResizeO
 - `useFontReady` detects when a web font finishes loading
 - Layout recomputation is effectively free for stable inputs thanks to LRU caching
 
-## Code
+## Live Demo
 
-```tsx
-import { useRef } from "react";
-import {
-  Pretext,
-  useResizeObserver,
-  useFontReady,
-} from "react-pretext";
-
-function ResponsiveArticle({ text }: { text: string }) {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { width } = useResizeObserver(containerRef);
-  const fontReady = useFontReady("16px Inter");
-
-  return (
-    <div ref={containerRef} style={{ width: "100%", maxWidth: 800, margin: "0 auto" }}>
-      {width > 0 && (
-        <Pretext.Root text={text} width={width} font="16px Inter" lineHeight={24}>
-          {(layout) => (
-            <div style={{ position: "relative", height: layout.height }}>
-              <Pretext.Lines>
-                {(line) => (
-                  <div
-                    key={line.key}
-                    style={{
-                      position: "absolute",
-                      top: line.y,
-                      left: 0,
-                      whiteSpace: "pre",
-                      opacity: fontReady ? 1 : 0.5,
-                    }}
-                  >
-                    {line.text}
-                  </div>
-                )}
-              </Pretext.Lines>
-            </div>
-          )}
-        </Pretext.Root>
-      )}
-    </div>
-  );
-}
-```
+<a href="https://react-pretext.vercel.app/#/basic" target="_blank">Open Basic demo</a>
 
 ## Related
 

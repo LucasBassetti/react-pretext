@@ -14,6 +14,8 @@ export function DomRenderer({ layout, className, style }: DomRendererProps) {
 			style={{
 				position: "relative",
 				height: layout.height,
+				font: layout.font,
+				lineHeight: `${layout.lineHeight}px`,
 				...style,
 			}}
 		>

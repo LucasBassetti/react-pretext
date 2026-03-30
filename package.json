@@ -1,6 +1,6 @@
 {
   "name": "react-pretext",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "React adapter for @chenglou/pretext — deterministic text layout without DOM measurement",
   "license": "MIT",
   "type": "module",
@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "build": "tsup",
+    "bench": "vitest bench",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "biome check src",

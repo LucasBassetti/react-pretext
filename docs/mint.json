@@ -54,7 +54,12 @@
         "examples/canvas-rendering",
         "examples/responsive-layout",
         "examples/debug-overlay",
-        "examples/font-loading"
+        "examples/font-loading",
+        "examples/animation",
+        "examples/code-editor",
+        "examples/card-grid",
+        "examples/tooltip",
+        "examples/data-table"
       ]
     }
   ]
