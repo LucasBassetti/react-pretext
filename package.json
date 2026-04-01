@@ -28,7 +28,7 @@
     "dev": "vite --config demo/vite.config.ts",
     "build:demo": "vite build --config demo/vite.config.ts",
     "docs:dev": "cd docs && pnpm dev",
-    "docs:build": "cd docs && pnpm build"
+    "docs:build": "cd docs && pnpm install && pnpm build"
   },
   "peerDependencies": {
     "react": ">=18.0.0",
