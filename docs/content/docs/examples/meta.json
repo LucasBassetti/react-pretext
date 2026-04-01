@@ -1,15 +1,4 @@
 {
 	"title": "Examples",
-	"pages": [
-		"chat-ui",
-		"canvas-rendering",
-		"responsive-layout",
-		"debug-overlay",
-		"font-loading",
-		"animation",
-		"code-editor",
-		"card-grid",
-		"tooltip",
-		"data-table"
-	]
+	"pages": ["text-flow"]
 }

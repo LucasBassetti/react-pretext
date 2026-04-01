@@ -15,6 +15,9 @@ export { useResizeObserver } from "./hooks/useResizeObserver.js";
 export { computeLayout, computeHeight } from "./core/layout.js";
 export { createCache, clearLayoutCache } from "./core/cache.js";
 
+// Low-level layout (re-exported from @chenglou/pretext)
+export { prepareWithSegments, layoutNextLine } from "@chenglou/pretext";
+
 // Renderers
 export { DomRenderer } from "./renderers/dom.js";
 export { SvgRenderer } from "./renderers/svg.js";

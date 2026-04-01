@@ -1,0 +1,33 @@
+---
+title: Text Flow Around Obstacles
+description: Drag shapes to see text reflow in real time using layoutNextLine with per-line variable widths.
+---
+
+Each line gets a different available width based on the obstacle's position and shape.
+Drag the shape anywhere on the canvas. Switch between Rectangle, Circle, and Diamond to see different exclusion zones.
+
+<TextFlowDemo />
+
+## How It Works
+
+The key API is `layoutNextLine` from `react-pretext` — an iterator that lays out one line at a time, accepting a different `maxWidth` on each call.
+
+```ts
+import { prepareWithSegments, layoutNextLine } from "react-pretext";
+
+const prepared = prepareWithSegments(text, font);
+let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+let y = 0;
+
+while (true) {
+  const width = getAvailableWidth(y, obstacle); // varies per line
+  const line = layoutNextLine(prepared, cursor, width);
+  if (line === null) break;
+
+  ctx.fillText(line.text, xOffset, y);
+  cursor = line.end;
+  y += lineHeight;
+}
+```
+
+For lines that intersect the obstacle, the demo lays out text into the left gap first, then continues remaining text into the right gap on the same y-coordinate — so text flows on both sides of the shape.

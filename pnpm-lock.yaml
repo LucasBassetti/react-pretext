@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@chenglou/pretext':
-        specifier: ^0.0.3
-        version: 0.0.3
+        specifier: ^0.0.4
+        version: 0.0.4
     devDependencies:
       '@biomejs/biome':
         specifier: ^1.9.0
@@ -198,8 +198,8 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@chenglou/pretext@0.0.3':
-    resolution: {integrity: sha512-RQmqMqUAPRCyv4R3LlRi/ao6KbNWYclqLA+V1HS7sWgyUUbjn3JmmlfXZSY/BjM4rbmIaMSyIVisYocYGYftiQ==}
+  '@chenglou/pretext@0.0.4':
+    resolution: {integrity: sha512-FnPAFMid1/p1j2V2gRPUVBarGUIb2PhkkC9YNnTOfPtTDgHKh8siO8PP9pCxpFfYlcodWPJpE1UbSHGQqt8pQQ==}
 
   '@csstools/color-helpers@5.1.0':
     resolution: {integrity: sha512-S11EXWJyy0Mz5SYvRmY8nJYTFFd1LCNV+7cXyAgQtOOuzb4EsgfqDufL+9esx72/eLhsRdGZwaldu/h+E4t4BA==}
@@ -1802,7 +1802,7 @@ snapshots:
   '@biomejs/cli-win32-x64@1.9.4':
     optional: true
 
-  '@chenglou/pretext@0.0.3': {}
+  '@chenglou/pretext@0.0.4': {}
 
   '@csstools/color-helpers@5.1.0': {}
 
