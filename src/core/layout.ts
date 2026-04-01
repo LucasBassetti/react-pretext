@@ -37,6 +37,8 @@ function estimateLayoutSSR(options: PretextLayoutOptions): PretextLayoutResult {
 		height: lineCount * options.lineHeight,
 		lineCount,
 		lines,
+		font: options.font,
+		lineHeight: options.lineHeight,
 	};
 }
 
@@ -76,6 +78,8 @@ export function computeLayout(
 		height: raw.height,
 		lineCount: raw.lineCount,
 		lines,
+		font: options.font,
+		lineHeight: options.lineHeight,
 	};
 
 	layoutCache.set(key, result);

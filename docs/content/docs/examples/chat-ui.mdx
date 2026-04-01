@@ -1,0 +1,21 @@
+---
+title: Chat UI
+description: Virtualized chat with 10,000 precomputed messages
+---
+
+A virtualized chat interface rendering 10,000 messages with precomputed heights — no layout measurement during scroll.
+
+## Key Concepts
+
+- `usePretextVirtualizer` precomputes all 10k heights using the fast `computeHeight` path
+- Scroll events only trigger a binary search + array slice — no layout recomputation
+- `useResizeObserver` adapts the layout when the container width changes
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/chat" target="_blank">Open Chat UI demo</a>
+
+## Related
+
+- [usePretextVirtualizer](/docs/api/hooks#usepretextvirtualizer) — virtualizer hook reference
+- [Performance](/docs/guides/performance) — caching and fast paths

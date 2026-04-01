@@ -1,0 +1,22 @@
+---
+title: Card Grid
+description: Responsive CSS grid with precomputed text heights
+---
+
+A responsive card grid where each card uses precomputed text heights for consistent layout without content jumps.
+
+## Key Concepts
+
+- CSS Grid handles the responsive column layout
+- Each card uses `useResizeObserver` to track its own width
+- `usePretextLayout` computes text height per card for stable sizing
+- No layout shift when text reflows on resize
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/cardgrid" target="_blank">Open Card Grid demo</a>
+
+## Related
+
+- [useResizeObserver](/docs/api/hooks#useresizeobserver) — resize tracking hook
+- [usePretextLayout](/docs/api/hooks#usepretextlayout) — layout hook

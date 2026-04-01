@@ -1,0 +1,22 @@
+---
+title: Animation
+description: Animated text reflow as container width changes
+---
+
+Watch text reflow in real-time as the container width oscillates using `requestAnimationFrame`. Demonstrates the speed of `computeLayout` — pure arithmetic fast enough for 60fps animation.
+
+## Key Concepts
+
+- `usePretextLayout` recomputes on every width change
+- Width changes driven by `requestAnimationFrame` with a sine wave
+- No debouncing needed — layout computation is sub-millisecond
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/animation" target="_blank">Open Animation demo</a>
+
+## Related
+
+- [usePretextLayout](/docs/api/hooks#usepretextlayout) — hook API reference
+- [DomRenderer](/docs/api/renderers#domrenderer) — DOM rendering
+- [Performance](/docs/guides/performance) — why this is fast

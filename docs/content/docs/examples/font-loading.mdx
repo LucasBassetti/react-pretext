@@ -1,0 +1,21 @@
+---
+title: Font Loading
+description: Detect font loading and re-layout with correct metrics
+---
+
+Use `useFontReady` to detect when a web font finishes loading, then re-layout with correct character widths.
+
+## Key Concepts
+
+- `useFontReady` returns `false` until the font is available
+- Use a fallback font for initial render, swap to the target font when ready
+- Layout automatically recomputes when the font prop changes
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/basic" target="_blank">Open Basic demo</a>
+
+## Related
+
+- [useFontReady](/docs/api/hooks#usefontready) — font loading hook
+- [SSR](/docs/guides/ssr) — server-side rendering considerations

@@ -1,0 +1,158 @@
+---
+title: Renderers
+description: DOM, SVG, and Canvas renderers for text layout
+---
+
+react-pretext includes three renderers for common output targets. All renderers accept a `PretextLayoutResult` from `usePretextLayout` or `computeLayout`.
+
+## DomRenderer
+
+Renders lines as absolutely positioned `<div>` elements inside a relative container.
+
+```tsx
+import { DomRenderer, usePretextLayout } from "react-pretext";
+
+function TextBlock({ text }: { text: string }) {
+  const layout = usePretextLayout({
+    text,
+    maxWidth: 300,
+    font: "16px Inter",
+    lineHeight: 24,
+  });
+
+  return <DomRenderer layout={layout} />;
+}
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `layout` | `PretextLayoutResult` | Yes | Layout result from `usePretextLayout` or `computeLayout` |
+| `className` | `string` | No | CSS class for the container div |
+| `style` | `CSSProperties` | No | Additional inline styles merged with the container's positioning styles |
+
+---
+
+## SvgRenderer
+
+Renders lines as `<text>` elements inside an `<svg>`. Includes accessibility attributes (`role="img"`, `aria-label`, `<title>`).
+
+```tsx
+import { SvgRenderer, usePretextLayout } from "react-pretext";
+
+function SvgText({ text }: { text: string }) {
+  const layout = usePretextLayout({
+    text,
+    maxWidth: 300,
+    font: "16px Inter",
+    lineHeight: 24,
+  });
+
+  return <SvgRenderer layout={layout} font="16px Inter" title="Article text" />;
+}
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `layout` | `PretextLayoutResult` | Yes | Layout result from `usePretextLayout` or `computeLayout` |
+| `font` | `string` | No | CSS font applied to each `<text>` element |
+| `className` | `string` | No | CSS class for the `<svg>` element |
+| `title` | `string` | No | Accessible title for the SVG (default: `"Text layout"`) |
+
+---
+
+## renderToCanvas
+
+Imperative function that draws layout lines onto a Canvas 2D context. Call this inside a `useEffect` or `useLayoutEffect`.
+
+```tsx
+import { useEffect, useRef } from "react";
+import { renderToCanvas, computeLayout } from "react-pretext";
+
+function CanvasText({ text }: { text: string }) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const layout = computeLayout({
+    text,
+    font: "16px Inter",
+    maxWidth: 300,
+    lineHeight: 24,
+  });
+
+  useEffect(() => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, 300, layout.height);
+    renderToCanvas(ctx, layout, {
+      x: 10,
+      y: 10,
+      font: "16px Inter",
+      color: "#333",
+    });
+  }, [layout]);
+
+  return <canvas ref={canvasRef} width={300} height={layout.height} />;
+}
+```
+
+### Parameters
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `ctx` | `CanvasRenderingContext2D` | Yes | Canvas 2D rendering context |
+| `layout` | `PretextLayoutResult` | Yes | Layout result to render |
+| `options` | `CanvasRenderOptions` | No | Rendering options (all optional) |
+
+### CanvasRenderOptions
+
+| Option | Type | Default | Description |
+|--------|------|---------|-------------|
+| `x` | `number` | `0` | Horizontal offset |
+| `y` | `number` | `0` | Vertical offset |
+| `font` | `string` | current ctx font | CSS font to set on the context |
+| `color` | `string` | current ctx fillStyle | Fill color for text |
+
+---
+
+## Example: Same Text, Three Renderers
+
+```tsx
+import { usePretextLayout, DomRenderer, SvgRenderer, renderToCanvas } from "react-pretext";
+import { useEffect, useRef } from "react";
+
+const text = "The quick brown fox jumps over the lazy dog. This text is long enough to demonstrate line wrapping across multiple lines in a constrained width.";
+
+function ThreeRenderers() {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+
+  const layout = usePretextLayout({
+    text,
+    maxWidth: 250,
+    font: "14px sans-serif",
+    lineHeight: 20,
+  });
+
+  useEffect(() => {
+    const ctx = canvasRef.current?.getContext("2d");
+    if (!ctx) return;
+    ctx.clearRect(0, 0, 250, layout.height);
+    renderToCanvas(ctx, layout, { font: "14px sans-serif", color: "#000" });
+  }, [layout]);
+
+  return (
+    <div style={{ display: "flex", gap: 32 }}>
+      <div>
+        <h3>DOM</h3>
+        <DomRenderer layout={layout} style={{ width: 250, font: "14px sans-serif" }} />
+      </div>
+      <div>
+        <h3>SVG</h3>
+        <SvgRenderer layout={layout} font="14px sans-serif" title="SVG demo" />
+      </div>
+      <div>
+        <h3>Canvas</h3>
+        <canvas ref={canvasRef} width={250} height={layout.height} />
+      </div>
+    </div>
+  );
+}
+```

@@ -1,0 +1,81 @@
+---
+title: Server-Side Rendering
+description: How react-pretext works on the server
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+Pretext requires canvas for `prepare()`, which measures character widths via `CanvasRenderingContext2D.measureText()`. This API is unavailable in Node.js.
+
+## Server Behavior
+
+When `typeof document === "undefined"`, react-pretext falls back to estimation:
+
+### computeLayout / computeHeight
+
+Returns estimated dimensions using a character-width heuristic:
+- Average character width: **8px**
+- Characters per line: `Math.floor(maxWidth / 8)`
+- Line count: `Math.ceil(text.length / charsPerLine)`
+- Height: `lineCount * lineHeight`
+
+Lines are split at fixed character boundaries (not word boundaries), so server-rendered text may not match the client exactly.
+
+### useFontReady
+
+Returns `true` on the server to avoid hydration mismatches. The font check only runs on the client after hydration.
+
+## Strategies for Pixel-Perfect SSR
+
+### 1. Accept the approximation
+
+For most use cases, the server estimate is close enough. The client will re-layout with exact measurements after hydration. If your layout uses `position: absolute` for line positioning, the visual shift is minimal.
+
+### 2. Pre-compute at build time
+
+If you know the text content ahead of time, compute layouts during your build step using a Node.js canvas polyfill:
+
+```ts
+// build-layouts.ts
+import { createCanvas } from "canvas"; // node-canvas
+import { computeLayout } from "react-pretext";
+
+// Polyfill document for pretext's canvas detection
+globalThis.document = { createElement: () => createCanvas(1, 1) } as any;
+
+const layout = computeLayout({
+  text: "Known content",
+  font: "16px Inter",
+  maxWidth: 600,
+  lineHeight: 24,
+});
+
+// Save layout to JSON, pass to client as props
+```
+
+### 3. Use a canvas polyfill at runtime
+
+Install a Node.js canvas implementation and polyfill `document` before importing react-pretext:
+
+```bash
+pnpm install canvas
+```
+
+```ts
+// server-setup.ts
+import { createCanvas } from "canvas";
+
+if (typeof document === "undefined") {
+  (globalThis as any).document = {
+    createElement: (tag: string) => {
+      if (tag === "canvas") return createCanvas(1, 1);
+      return {};
+    },
+    fonts: { check: () => true, ready: Promise.resolve(), load: () => Promise.resolve() },
+  };
+}
+```
+
+<Callout type="warn">
+  Canvas polyfills add significant bundle size and may produce slightly different measurements than browser canvas. Test thoroughly before using in production.
+</Callout>

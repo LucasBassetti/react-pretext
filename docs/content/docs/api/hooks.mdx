@@ -1,0 +1,167 @@
+---
+title: Hooks
+description: React hooks for text layout, virtualization, font loading, and resize tracking
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+## usePretextLayout
+
+Computes layout for a text block. Results are memoized via `useMemo` and cached in a global LRU cache (500 entries).
+
+```tsx
+import { usePretextLayout } from "react-pretext";
+
+const layout = usePretextLayout({
+  text: "Hello world",
+  maxWidth: 300,
+  font: "16px Inter",    // optional if Provider is used
+  lineHeight: 24,         // optional if Provider is used
+});
+```
+
+### Options
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | Text content to lay out |
+| `maxWidth` | `number` | Yes | Maximum width in pixels for line breaking |
+| `font` | `string` | No | CSS font shorthand. Required unless provided by `Pretext.Provider`. |
+| `lineHeight` | `number` | No | Line height in pixels. Required unless provided by `Pretext.Provider`. |
+| `locale` | `string` | No | Locale for text segmentation. Falls back to provider locale. |
+
+### Return Type
+
+Returns a `PretextLayoutResult`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `height` | `number` | Total block height in pixels (`lineCount * lineHeight`) |
+| `lineCount` | `number` | Number of wrapped lines |
+| `lines` | `PretextLineInfo[]` | Per-line details (see [Types](/docs/api/types)) |
+
+---
+
+## usePretextVirtualizer
+
+Virtualizes a list of text items. Precomputes all heights using the fast `computeHeight` path (~10x faster than full layout). Supports 10k+ items with zero layout shift.
+
+```tsx
+import { usePretextVirtualizer } from "react-pretext";
+
+const items = messages.map((msg) => ({ text: msg.text }));
+
+const { virtualItems, totalHeight, startIndex, endIndex } = usePretextVirtualizer({
+  items,
+  width: 400,
+  lineHeight: 24,
+  scrollTop: 0,
+  viewportHeight: 600,
+  overscan: 5,
+  font: "16px Inter",
+});
+```
+
+### Options
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `items` | `Array<{ text: string; font?: string }>` | Yes | Items to virtualize. Each item needs `text`; `font` is optional per-item override. |
+| `width` | `number` | Yes | Container width in pixels |
+| `lineHeight` | `number` | Yes | Line height in pixels |
+| `scrollTop` | `number` | Yes | Current scroll position in pixels |
+| `viewportHeight` | `number` | Yes | Visible viewport height in pixels |
+| `overscan` | `number` | No | Extra items to render above and below the visible range (default: 3) |
+| `font` | `string` | No | Default font for items that don't specify their own |
+
+### Return Type
+
+Returns a `PretextVirtualizerResult`:
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `virtualItems` | `VirtualItem[]` | Visible items with `index`, `key`, `offsetTop`, `height`, `data` |
+| `totalHeight` | `number` | Total scrollable height in pixels |
+| `startIndex` | `number` | First visible item index |
+| `endIndex` | `number` | Last visible item index |
+
+---
+
+## useFontReady
+
+Returns `true` when the specified font is loaded and available for rendering. Uses `document.fonts` API internally.
+
+```tsx
+import { useFontReady } from "react-pretext";
+
+const ready = useFontReady("16px Inter");
+// false initially, true after font loads
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `font` | `string` | Yes | CSS font shorthand to check (e.g. `"16px Inter"`) |
+
+**Returns:** `boolean` — `false` until the font is loaded, then `true`. Always returns `true` on the server (SSR-safe).
+
+<Callout type="info">
+  If the font doesn't exist or fails to load, `useFontReady` returns `true` to avoid blocking rendering indefinitely.
+</Callout>
+
+---
+
+## useResizeObserver
+
+Tracks the content box dimensions of a DOM element via `ResizeObserver`.
+
+```tsx
+import { useRef } from "react";
+import { useResizeObserver } from "react-pretext";
+
+const ref = useRef<HTMLDivElement>(null);
+const { width, height } = useResizeObserver(ref);
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `ref` | `RefObject<Element \| null>` | Yes | React ref attached to the element to observe |
+
+**Returns:** `Size` — `{ width: number; height: number }`. Returns `{ width: 0, height: 0 }` until the element mounts.
+
+---
+
+## Example: Responsive Text Layout
+
+Combine `useResizeObserver` with `usePretextLayout` to adapt text layout to container width:
+
+```tsx
+import { useRef } from "react";
+import { usePretextLayout, useResizeObserver } from "react-pretext";
+
+function ResponsiveText({ text }: { text: string }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const { width } = useResizeObserver(containerRef);
+
+  const layout = usePretextLayout({
+    text,
+    maxWidth: width || 300,
+    font: "16px Inter",
+    lineHeight: 24,
+  });
+
+  return (
+    <div ref={containerRef} style={{ width: "100%" }}>
+      <div style={{ position: "relative", height: layout.height }}>
+        {layout.lines.map((line) => (
+          <div
+            key={line.key}
+            style={{ position: "absolute", top: line.y, whiteSpace: "pre" }}
+          >
+            {line.text}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+```

@@ -2,11 +2,16 @@ import { useCallback, useEffect, useState } from "react";
 import { Pretext } from "react-pretext";
 import logoDark from "./logo-dark.svg";
 import logoLight from "./logo-light.svg";
+import { AnimationDemo } from "./pages/AnimationDemo.tsx";
 import { BasicDemo } from "./pages/Basic.tsx";
 import { CanvasDemo } from "./pages/CanvasDemo.tsx";
+import { CardGridDemo } from "./pages/CardGridDemo.tsx";
 import { ChatDemo } from "./pages/ChatDemo.tsx";
+import { CodeEditorDemo } from "./pages/CodeEditorDemo.tsx";
+import { DataTableDemo } from "./pages/DataTableDemo.tsx";
 import { DebugDemo } from "./pages/DebugDemo.tsx";
 import { MasonryDemo } from "./pages/MasonryDemo.tsx";
+import { TooltipDemo } from "./pages/TooltipDemo.tsx";
 
 const PAGES = {
 	basic: { label: "Basic", component: BasicDemo },
@@ -14,6 +19,11 @@ const PAGES = {
 	canvas: { label: "Canvas", component: CanvasDemo },
 	debug: { label: "Debug Mode", component: DebugDemo },
 	masonry: { label: "Masonry", component: MasonryDemo },
+	animation: { label: "Animation", component: AnimationDemo },
+	codeeditor: { label: "Code Editor", component: CodeEditorDemo },
+	cardgrid: { label: "Card Grid", component: CardGridDemo },
+	tooltip: { label: "Tooltip", component: TooltipDemo },
+	datatable: { label: "Data Table", component: DataTableDemo },
 } as const;
 
 type PageKey = keyof typeof PAGES;

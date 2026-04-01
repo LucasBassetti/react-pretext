@@ -8,6 +8,8 @@ export interface SvgRendererProps {
 }
 
 export function SvgRenderer({ layout, font, className, title = "Text layout" }: SvgRendererProps) {
+	const resolvedFont = font ?? layout.font;
+
 	return (
 		<svg
 			className={className}
@@ -24,7 +26,7 @@ export function SvgRenderer({ layout, font, className, title = "Text layout" }: 
 					x={0}
 					y={line.y}
 					dominantBaseline="hanging"
-					style={font ? { font } : undefined}
+					style={{ font: resolvedFont }}
 				>
 					{line.text}
 				</text>

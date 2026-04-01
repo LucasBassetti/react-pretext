@@ -1,0 +1,22 @@
+---
+title: Data Table
+description: Truncated text in table columns with precomputed widths
+---
+
+A data table where text in narrow columns is truncated with ellipsis, using precomputed layout to determine when truncation is needed.
+
+## Key Concepts
+
+- Single-line layout with `computeLayout` determines if text overflows
+- Ellipsis applied via CSS when computed width exceeds column width
+- Full text shown on hover via `title` attribute
+- No DOM measurement needed to decide truncation
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/datatable" target="_blank">Open Data Table demo</a>
+
+## Related
+
+- [computeLayout](/docs/api/core-functions#computelayout) — standalone layout computation
+- [DomRenderer](/docs/api/renderers#domrenderer) — DOM rendering

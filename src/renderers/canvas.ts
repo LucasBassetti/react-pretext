@@ -19,9 +19,7 @@ export function renderToCanvas(
 	const offsetX = options?.x ?? 0;
 	const offsetY = options?.y ?? 0;
 
-	if (options?.font) {
-		ctx.font = options.font;
-	}
+	ctx.font = options?.font ?? layout.font;
 	if (options?.color) {
 		ctx.fillStyle = options.color;
 	}
