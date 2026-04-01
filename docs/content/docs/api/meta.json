@@ -1,0 +1,4 @@
+{
+	"title": "API Reference",
+	"pages": ["components", "hooks", "core-functions", "renderers", "types"]
+}

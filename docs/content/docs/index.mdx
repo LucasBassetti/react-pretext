@@ -1,0 +1,49 @@
+---
+title: Introduction
+description: Deterministic text layout for React without DOM measurement
+---
+
+import { Cards, Card } from "fumadocs-ui/components/card";
+
+# react-pretext
+
+React adapter for [`@chenglou/pretext`](https://github.com/chenglou/pretext) — deterministic text layout without DOM measurement.
+
+Pretext computes line breaks and text height using pure arithmetic on cached character widths (~0.0002ms per layout). `react-pretext` wraps it with React hooks, headless components, and optional renderers.
+
+## Features
+
+<Cards>
+	<Card title="No DOM Measurement">
+		Layout is computed via canvas `measureText`, then pure arithmetic. No `getBoundingClientRect`, no layout thrashing.
+	</Card>
+	<Card title="Deterministic">
+		Same input always produces the same output. Heights are known before render.
+	</Card>
+	<Card title="Virtualization">
+		Built-in virtualizer that precomputes item heights for 10k+ item lists with zero layout shift.
+	</Card>
+	<Card title="Headless">
+		Compound components with render props. No styling opinions. Bring your own UI.
+	</Card>
+	<Card title="Multiple Renderers">
+		DOM, SVG, and Canvas renderers included out of the box.
+	</Card>
+	<Card title="Font-Aware">
+		`useFontReady` hook tracks font loading and triggers re-layout automatically.
+	</Card>
+	<Card title="SSR-Safe">
+		Approximate layout on the server, pixel-perfect on the client.
+	</Card>
+	<Card title="TypeScript">
+		Full type inference and autocomplete-friendly API.
+	</Card>
+</Cards>
+
+## Next Steps
+
+<Cards>
+	<Card title="Quickstart" href="/docs/quickstart">
+		Install react-pretext and render your first text layout in under a minute.
+	</Card>
+</Cards>

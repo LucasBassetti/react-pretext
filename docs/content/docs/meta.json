@@ -1,0 +1,12 @@
+{
+	"pages": [
+		"index",
+		"quickstart",
+		"---API Reference---",
+		"...api",
+		"---Guides---",
+		"...guides",
+		"---Examples---",
+		"...examples"
+	]
+}

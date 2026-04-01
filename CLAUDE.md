@@ -36,8 +36,8 @@ pnpm lint           # biome check src
 pnpm format         # biome format --write src
 pnpm dev            # vite dev server for demo app
 pnpm build:demo     # vite build for demo
-pnpm docs:dev       # mintlify dev server for docs
-pnpm docs:validate  # mintlify validate
+pnpm docs:dev       # fumadocs dev server (Next.js)
+pnpm docs:build     # fumadocs production build
 ```
 
 ## Conventions

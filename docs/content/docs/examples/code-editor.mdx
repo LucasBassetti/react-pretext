@@ -1,0 +1,22 @@
+---
+title: Code Editor
+description: Monospace code display with line numbers and word wrap
+---
+
+A code editor display with monospace font, line numbers in a gutter, and per-source-line layout. When a line wraps, continuation lines have no line number.
+
+## Key Concepts
+
+- Each source line is laid out independently with `usePretextLayout`
+- Line numbers reflect source lines, not visual lines
+- Monospace font ensures consistent character widths
+- Render prop pattern gives full control over line rendering
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/codeeditor" target="_blank">Open Code Editor demo</a>
+
+## Related
+
+- [usePretextLayout](/docs/api/hooks#usepretextlayout) — layout hook
+- [DomRenderer](/docs/api/renderers#domrenderer) — DOM rendering

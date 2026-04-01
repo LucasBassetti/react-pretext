@@ -1,0 +1,147 @@
+---
+title: Components
+description: Compound components for declarative text layout
+---
+
+react-pretext provides a compound component API via the `Pretext` namespace. Import it as:
+
+```tsx
+import { Pretext } from "react-pretext";
+```
+
+Individual components are also available as named exports: `PretextProvider`, `PretextRoot`, `PretextLines`, `PretextLine`.
+
+---
+
+## Pretext.Provider
+
+Provides default `font`, `lineHeight`, `locale`, and `debug` values to all descendant components and hooks.
+
+```tsx
+<Pretext.Provider font="16px Inter" lineHeight={24}>
+  {children}
+</Pretext.Provider>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `font` | `string` | Yes | CSS font shorthand (e.g. `"16px Inter"`, `"bold 14px monospace"`) |
+| `lineHeight` | `number` | Yes | Line height in pixels |
+| `locale` | `string` | No | Locale for text segmentation (e.g. `"en"`, `"ja"`) |
+| `debug` | `boolean` | No | Enable debug overlays on `Pretext.Line` components |
+
+---
+
+## Pretext.Root
+
+Computes text layout and makes it available to children. Supports two patterns:
+
+### Child component pattern
+
+Children access layout through `Pretext.Lines`:
+
+```tsx
+<Pretext.Root text="Hello world" width={300}>
+  <Pretext.Lines>
+    {(line) => <div key={line.key}>{line.text}</div>}
+  </Pretext.Lines>
+</Pretext.Root>
+```
+
+### Render prop pattern
+
+Full control over the layout result:
+
+```tsx
+<Pretext.Root text={text} width={300}>
+  {(layout) => (
+    <svg height={layout.height}>
+      {layout.lines.map((line) => (
+        <text key={line.key} y={line.y}>{line.text}</text>
+      ))}
+    </svg>
+  )}
+</Pretext.Root>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | Text content to lay out |
+| `width` | `number` | Yes | Maximum width in pixels for line breaking |
+| `font` | `string` | No | Overrides the font from `Pretext.Provider` |
+| `lineHeight` | `number` | No | Overrides the lineHeight from `Pretext.Provider` |
+| `locale` | `string` | No | Locale for text segmentation |
+| `children` | `ReactNode \| (layout: PretextLayoutResult) => ReactNode` | Yes | Either React nodes (use with `Pretext.Lines`) or a render function receiving the layout result |
+
+---
+
+## Pretext.Lines
+
+Iterates over lines from the nearest `Pretext.Root`. Must be a descendant of `Pretext.Root`.
+
+```tsx
+<Pretext.Lines>
+  {(line, index) => (
+    <div key={line.key} style={{ position: "absolute", top: line.y }}>
+      {line.text}
+    </div>
+  )}
+</Pretext.Lines>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `children` | `(line: PretextLineInfo, index: number) => ReactNode` | Yes | Render function called for each line. Receives the line info and its index. |
+
+---
+
+## Pretext.Line
+
+Single-line wrapper with optional debug overlay that shows line width measurements.
+
+```tsx
+<Pretext.Lines>
+  {(line) => (
+    <Pretext.Line key={line.key} line={line} debug>
+      {(line) => <span>{line.text}</span>}
+    </Pretext.Line>
+  )}
+</Pretext.Lines>
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `line` | `PretextLineInfo` | Yes | The line info object from `Pretext.Lines` or a layout result |
+| `children` | `ReactNode \| (line: PretextLineInfo) => ReactNode` | No | Content to render. Can be a render function or static nodes. Defaults to `line.text` if omitted. |
+| `debug` | `boolean` | No | Show a red outline and width measurement overlay. Falls back to the `debug` value from `Pretext.Provider`. |
+
+---
+
+## Example: Full Component Tree
+
+```tsx
+import { Pretext } from "react-pretext";
+
+function Article({ title, body }: { title: string; body: string }) {
+  return (
+    <Pretext.Provider font="16px Inter" lineHeight={24}>
+      <div style={{ maxWidth: 600, margin: "0 auto" }}>
+        <h1>{title}</h1>
+        <Pretext.Root text={body} width={600}>
+          <Pretext.Lines>
+            {(line) => (
+              <Pretext.Line key={line.key} line={line}>
+                {(l) => (
+                  <div style={{ position: "absolute", top: l.y }}>
+                    {l.text}
+                  </div>
+                )}
+              </Pretext.Line>
+            )}
+          </Pretext.Lines>
+        </Pretext.Root>
+      </div>
+    </Pretext.Provider>
+  );
+}
+```

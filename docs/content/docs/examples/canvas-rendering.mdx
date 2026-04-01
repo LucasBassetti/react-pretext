@@ -1,0 +1,21 @@
+---
+title: Canvas Rendering
+description: Draw text directly onto a canvas element
+---
+
+Draw text directly onto a `<canvas>` element using `renderToCanvas`. This is useful for data visualizations, games, or pixel-level text control.
+
+## Key Concepts
+
+- `computeLayout` produces line positions, then `renderToCanvas` draws them
+- `renderToCanvas` draws each line using `fillText`
+- Account for `devicePixelRatio` for sharp rendering on high-DPI screens
+
+## Live Demo
+
+<a href="https://react-pretext.vercel.app/#/canvas" target="_blank">Open Canvas demo</a>
+
+## Related
+
+- [renderToCanvas](/docs/api/renderers#rendertocanvas) — canvas renderer reference
+- [computeLayout](/docs/api/core-functions#computelayout) — standalone layout computation
