@@ -29,12 +29,6 @@
       ],
       "collections/*": [
         "./.source/*"
-      ],
-      "react-pretext": [
-        "../src/index.ts"
-      ],
-      "@chenglou/pretext": [
-        "./node_modules/@chenglou/pretext"
       ]
     }
   },
