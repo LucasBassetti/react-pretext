@@ -95,6 +95,58 @@ export function prepare(text: string, font: string): MockPreparedTextWithSegment
 	return prepareWithSegments(text, font);
 }
 
+export function layoutNextLine(
+	prepared: MockPreparedTextWithSegments,
+	start: { segmentIndex: number; graphemeIndex: number },
+	maxWidth: number,
+): MockLayoutLine | null {
+	const text = prepared.text;
+	if (text.length === 0) return null;
+
+	// Build all lines at this maxWidth, then return the one matching `start`
+	const allLines = layoutWithLines(prepared, maxWidth, 1).lines;
+	const lineIndex = start.segmentIndex;
+	if (lineIndex >= allLines.length) return null;
+	return allLines[lineIndex];
+}
+
+export function walkLineRanges(
+	prepared: MockPreparedTextWithSegments,
+	maxWidth: number,
+	onLine: (line: {
+		width: number;
+		start: { segmentIndex: number; graphemeIndex: number };
+		end: { segmentIndex: number; graphemeIndex: number };
+	}) => void,
+): number {
+	const result = layoutWithLines(prepared, maxWidth, 1);
+	for (const line of result.lines) {
+		onLine({ width: line.width, start: line.start, end: line.end });
+	}
+	return result.lineCount;
+}
+
+export function profilePrepare(
+	_text: string,
+	_font: string,
+): {
+	analysisMs: number;
+	measureMs: number;
+	totalMs: number;
+	analysisSegments: number;
+	preparedSegments: number;
+	breakableSegments: number;
+} {
+	return {
+		analysisMs: 0.1,
+		measureMs: 0.2,
+		totalMs: 0.3,
+		analysisSegments: 1,
+		preparedSegments: 1,
+		breakableSegments: 0,
+	};
+}
+
 export function clearCache(): void {}
 
 export function setLocale(_locale?: string): void {}

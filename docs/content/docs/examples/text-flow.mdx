@@ -13,9 +13,9 @@ Drag the shape anywhere on the canvas. Switch between Rectangle, Circle, and Dia
 The key API is `layoutNextLine` from `react-pretext` — an iterator that lays out one line at a time, accepting a different `maxWidth` on each call.
 
 ```ts
-import { prepareWithSegments, layoutNextLine } from "react-pretext";
+import { computePreparedText, layoutNextLine } from "react-pretext";
 
-const prepared = prepareWithSegments(text, font);
+const prepared = computePreparedText({ text, font });
 let cursor = { segmentIndex: 0, graphemeIndex: 0 };
 let y = 0;
 

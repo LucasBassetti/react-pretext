@@ -1,3 +1,4 @@
+import { clearCache as clearPretextCache } from "@chenglou/pretext";
 import type { PretextLayoutResult } from "./types.js";
 
 const DEFAULT_CAPACITY = 500;
@@ -66,4 +67,21 @@ export function getGlobalCache(): LayoutCache {
 
 export function clearLayoutCache(): void {
 	globalCache?.clear();
+}
+
+// Registry for additional cache clear functions (e.g., height cache in layout.ts)
+const additionalClearFns: Array<() => void> = [];
+
+export function registerCacheClear(fn: () => void): void {
+	additionalClearFns.push(fn);
+}
+
+/**
+ * Clears all caching layers: react-pretext LRU cache, height cache,
+ * and @chenglou/pretext internal measurement caches.
+ */
+export function clearAllCaches(): void {
+	clearLayoutCache();
+	for (const fn of additionalClearFns) fn();
+	clearPretextCache();
 }

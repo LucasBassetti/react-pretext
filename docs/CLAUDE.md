@@ -9,10 +9,10 @@ Next.js App Router app powered by Fumadocs. Self-contained with its own `package
   - `index.mdx` — introduction page
   - `api/` — one page per export category (components, hooks, core-functions, renderers, types)
   - `guides/` — performance, SSR
-  - `examples/` — link to live demo at `react-pretext.vercel.app`
+  - `examples/` — embedded live React components (text-flow, masonry)
 - `app/` — Next.js App Router (layout, pages, API routes)
 - `lib/` — source loader, shared layout options
-- `components/` — MDX component overrides
+- `components/` — MDX component overrides and live demo components
 
 ## Adding a Page
 
@@ -22,9 +22,10 @@ Next.js App Router app powered by Fumadocs. Self-contained with its own `package
 
 ## Adding an Example
 
-1. Create `content/docs/examples/your-example.mdx`
-2. Link to the live demo: `react-pretext.vercel.app/#/yourpage`
-3. Add slug to `content/docs/examples/meta.json`
+1. Create a `"use client"` component in `components/your-demo.tsx` that imports from `react-pretext`
+2. Register it in `components/mdx.tsx` via `getMDXComponents()`
+3. Create `content/docs/examples/your-example.mdx` using `<YourDemo />`
+4. Add slug to `content/docs/examples/meta.json`
 
 ## Commands
 
@@ -38,5 +39,5 @@ pnpm docs:build  # Production build
 - MDX format with Fumadocs components (not Mintlify)
 - Theme color: teal (CSS vars in `app/global.css`)
 - API docs use markdown tables for props (not `<ParamField>`)
-- Example pages link to live demo — don't embed full code blocks
+- Example pages embed live React components via `"use client"` wrappers
 - Internal links use `/docs/` prefix (e.g., `/docs/api/hooks`)

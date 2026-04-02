@@ -1,3 +1,5 @@
+import type { LayoutLineRange as _LayoutLineRange } from "@chenglou/pretext";
+
 export type {
 	PreparedText,
 	PreparedTextWithSegments,
@@ -5,7 +7,11 @@ export type {
 	LayoutCursor,
 	LayoutResult,
 	LayoutLinesResult,
+	LayoutLineRange,
+	PrepareProfile,
 } from "@chenglou/pretext";
+
+export type WhiteSpaceMode = "normal" | "pre-wrap";
 
 export interface PretextLayoutOptions {
 	text: string;
@@ -68,4 +74,55 @@ export interface PretextVirtualizerResult {
 	totalHeight: number;
 	startIndex: number;
 	endIndex: number;
+}
+
+export interface ComputePreparedTextOptions {
+	text: string;
+	/** CSS font shorthand, e.g. "16px Inter" */
+	font: string;
+	locale?: string;
+	whiteSpace?: WhiteSpaceMode;
+}
+
+export interface VariableLayoutLine extends PretextLineInfo {
+	/** The maxWidth used for this specific line */
+	maxWidth: number;
+}
+
+export interface VariableLayoutResult {
+	height: number;
+	lineCount: number;
+	lines: VariableLayoutLine[];
+	font: string;
+	lineHeight: number;
+}
+
+export interface ComputeVariableLayoutOptions {
+	text: string;
+	/** CSS font shorthand, e.g. "16px Inter" */
+	font: string;
+	lineHeight: number;
+	/** Called for each line to get the available width. */
+	getMaxWidth: (lineIndex: number, y: number) => number;
+	locale?: string;
+	whiteSpace?: WhiteSpaceMode;
+	/** Safety limit on iterations. Default: 1000 */
+	maxLines?: number;
+}
+
+export interface ComputeLineRangesOptions {
+	text: string;
+	/** CSS font shorthand, e.g. "16px Inter" */
+	font: string;
+	maxWidth: number;
+	locale?: string;
+	whiteSpace?: WhiteSpaceMode;
+	/** Called for each line range. */
+	onLine: (range: _LayoutLineRange) => void;
+}
+
+export interface ProfileLayoutOptions {
+	text: string;
+	/** CSS font shorthand, e.g. "16px Inter" */
+	font: string;
 }

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { layoutNextLine, prepareWithSegments } from "react-pretext";
+import { computePreparedText, layoutNextLine } from "react-pretext";
 import type { LayoutCursor, LayoutLine } from "react-pretext";
 
 const FONT = "16px Inter, system-ui, sans-serif";
@@ -84,7 +84,7 @@ function layoutWithObstacle(
 	lineHeight: number,
 	obstacle: Obstacle,
 ): FlowLine[] {
-	const prepared = prepareWithSegments(text, font);
+	const prepared = computePreparedText({ text, font });
 	let cursor: LayoutCursor = { segmentIndex: 0, graphemeIndex: 0 };
 	const lines: FlowLine[] = [];
 	let y = 0;
