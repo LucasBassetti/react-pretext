@@ -1,12 +1,27 @@
 import {
 	layout,
+	layoutNextLine,
 	layoutWithLines,
 	prepare,
 	prepareWithSegments,
-	setLocale,
+	setLocale as pretextSetLocale,
+	profilePrepare,
+	walkLineRanges,
 } from "@chenglou/pretext";
-import { type LayoutCache, buildCacheKey, getGlobalCache } from "./cache.js";
-import type { PretextLayoutOptions, PretextLayoutResult, PretextLineInfo } from "./types.js";
+import type { PreparedTextWithSegments } from "@chenglou/pretext";
+import { type LayoutCache, buildCacheKey, getGlobalCache, registerCacheClear } from "./cache.js";
+import type {
+	ComputeLineRangesOptions,
+	ComputePreparedTextOptions,
+	ComputeVariableLayoutOptions,
+	PretextLayoutOptions,
+	PretextLayoutResult,
+	PretextLineInfo,
+	ProfileLayoutOptions,
+	VariableLayoutLine,
+	VariableLayoutResult,
+} from "./types.js";
+import type { PrepareProfile } from "./types.js";
 
 export type PretextHeightOptions = Pick<
 	PretextLayoutOptions,
@@ -60,7 +75,7 @@ export function computeLayout(
 	}
 
 	if (options.locale !== undefined) {
-		setLocale(options.locale);
+		pretextSetLocale(options.locale);
 	}
 
 	const prepared = prepareWithSegments(options.text, options.font);
@@ -107,7 +122,7 @@ export function computeHeight(options: PretextHeightOptions): number {
 	if (cached !== undefined) return cached;
 
 	if (options.locale !== undefined) {
-		setLocale(options.locale);
+		pretextSetLocale(options.locale);
 	}
 
 	const prepared = prepare(options.text, options.font);
@@ -121,4 +136,166 @@ export function computeHeight(options: PretextHeightOptions): number {
 	heightCache.set(key, result.height);
 
 	return result.height;
+}
+
+/**
+ * Prepares text for layout with SSR fallback and locale handling.
+ * Use the returned value with `layoutNextLine` for per-line variable widths.
+ */
+export function computePreparedText(options: ComputePreparedTextOptions): PreparedTextWithSegments {
+	if (typeof document === "undefined") {
+		// SSR fallback: build a mock PreparedTextWithSegments
+		const words = options.text.split(/(\s+)/);
+		return {
+			segments: words,
+		} as unknown as PreparedTextWithSegments;
+	}
+
+	if (options.locale !== undefined) {
+		pretextSetLocale(options.locale);
+	}
+
+	const prepareOptions = options.whiteSpace ? { whiteSpace: options.whiteSpace } : undefined;
+	return prepareWithSegments(options.text, options.font, prepareOptions);
+}
+
+const DEFAULT_MAX_LINES = 1000;
+
+/**
+ * Lays out text with a different maxWidth per line.
+ * Handles SSR fallback, locale, and cursor management internally.
+ */
+export function computeVariableLayout(options: ComputeVariableLayoutOptions): VariableLayoutResult {
+	const maxLines = options.maxLines ?? DEFAULT_MAX_LINES;
+
+	if (typeof document === "undefined") {
+		return estimateVariableLayoutSSR(options, maxLines);
+	}
+
+	if (options.locale !== undefined) {
+		pretextSetLocale(options.locale);
+	}
+
+	const prepareOptions = options.whiteSpace ? { whiteSpace: options.whiteSpace } : undefined;
+	const prepared = prepareWithSegments(options.text, options.font, prepareOptions);
+	let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+	const lines: VariableLayoutLine[] = [];
+	let y = 0;
+
+	for (let i = 0; i < maxLines; i++) {
+		const maxWidth = options.getMaxWidth(i, y);
+		const line = layoutNextLine(prepared, cursor, maxWidth);
+		if (line === null) break;
+
+		lines.push({
+			key: String(i),
+			text: line.text,
+			width: line.width,
+			y,
+			index: i,
+			maxWidth,
+		});
+
+		cursor = line.end;
+		y += options.lineHeight;
+	}
+
+	return {
+		height: lines.length * options.lineHeight,
+		lineCount: lines.length,
+		lines,
+		font: options.font,
+		lineHeight: options.lineHeight,
+	};
+}
+
+function estimateVariableLayoutSSR(
+	options: ComputeVariableLayoutOptions,
+	maxLines: number,
+): VariableLayoutResult {
+	const lines: VariableLayoutLine[] = [];
+	let charOffset = 0;
+	let y = 0;
+
+	for (let i = 0; i < maxLines && charOffset < options.text.length; i++) {
+		const maxWidth = options.getMaxWidth(i, y);
+		const charsPerLine = Math.max(1, Math.floor(maxWidth / SSR_AVG_CHAR_WIDTH));
+		const text = options.text.slice(charOffset, charOffset + charsPerLine);
+
+		lines.push({
+			key: String(i),
+			text,
+			width: text.length * SSR_AVG_CHAR_WIDTH,
+			y,
+			index: i,
+			maxWidth,
+		});
+
+		charOffset += charsPerLine;
+		y += options.lineHeight;
+	}
+
+	return {
+		height: lines.length * options.lineHeight,
+		lineCount: lines.length,
+		lines,
+		font: options.font,
+		lineHeight: options.lineHeight,
+	};
+}
+
+/**
+ * Iterates over line ranges without materializing line text.
+ * Useful for aggregate geometry calculations (e.g., computing total height at variable widths).
+ */
+export function computeLineRanges(options: ComputeLineRangesOptions): number {
+	if (typeof document === "undefined") {
+		const charsPerLine = Math.max(1, Math.floor(options.maxWidth / SSR_AVG_CHAR_WIDTH));
+		const lineCount = Math.max(1, Math.ceil(options.text.length / charsPerLine));
+		for (let i = 0; i < lineCount; i++) {
+			options.onLine({
+				width: Math.min(options.text.length - i * charsPerLine, charsPerLine) * SSR_AVG_CHAR_WIDTH,
+				start: { segmentIndex: i, graphemeIndex: 0 },
+				end: { segmentIndex: i + 1, graphemeIndex: 0 },
+			});
+		}
+		return lineCount;
+	}
+
+	if (options.locale !== undefined) {
+		pretextSetLocale(options.locale);
+	}
+
+	const prepareOptions = options.whiteSpace ? { whiteSpace: options.whiteSpace } : undefined;
+	const prepared = prepareWithSegments(options.text, options.font, prepareOptions);
+	return walkLineRanges(prepared, options.maxWidth, options.onLine);
+}
+
+/**
+ * Returns performance profiling data for text preparation.
+ * Useful for debugging and benchmarking.
+ */
+export function profileLayout(options: ProfileLayoutOptions): PrepareProfile {
+	if (typeof document === "undefined") {
+		return {
+			analysisMs: 0,
+			measureMs: 0,
+			totalMs: 0,
+			analysisSegments: 0,
+			preparedSegments: 0,
+			breakableSegments: 0,
+		};
+	}
+
+	return profilePrepare(options.text, options.font);
+}
+
+registerCacheClear(() => heightCache.clear());
+
+/**
+ * Sets the locale for text analysis (word/grapheme segmentation).
+ * Also clears pretext's internal caches.
+ */
+export function setLocale(locale?: string): void {
+	pretextSetLocale(locale);
 }

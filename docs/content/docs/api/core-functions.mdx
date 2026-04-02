@@ -103,5 +103,121 @@ clearLayoutCache();
 ```
 
 <Callout type="warn">
-  This only clears the global layout cache (used by `computeLayout` and `usePretextLayout`). The height cache used by `computeHeight` is separate and not cleared by this function.
+  This only clears the global layout cache (used by `computeLayout` and `usePretextLayout`). The height cache used by `computeHeight` is separate. Use `clearAllCaches` to clear everything.
 </Callout>
+
+---
+
+## clearAllCaches
+
+Clears all caching layers: the react-pretext layout cache, height cache, and the underlying `@chenglou/pretext` measurement caches.
+
+```ts
+import { clearAllCaches } from "react-pretext";
+
+clearAllCaches();
+```
+
+---
+
+## computePreparedText
+
+Prepares text for layout with SSR fallback and locale handling. Use the returned value with `layoutNextLine` for per-line variable widths.
+
+```ts
+import { computePreparedText, layoutNextLine } from "react-pretext";
+
+const prepared = computePreparedText({ text: "Hello world", font: "16px Inter" });
+let cursor = { segmentIndex: 0, graphemeIndex: 0 };
+
+const line = layoutNextLine(prepared, cursor, 300);
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | Text content to prepare |
+| `font` | `string` | Yes | CSS font shorthand |
+| `locale` | `string` | No | Locale for text segmentation |
+| `whiteSpace` | `"normal" \| "pre-wrap"` | No | Whitespace handling mode |
+
+**Returns:** A `PreparedTextWithSegments` for use with `layoutNextLine`.
+
+---
+
+## computeVariableLayout
+
+Lays out text with a different `maxWidth` per line. Handles SSR fallback, locale, and cursor management internally.
+
+```ts
+import { computeVariableLayout } from "react-pretext";
+
+const result = computeVariableLayout({
+  text: "Long text that wraps around an obstacle...",
+  font: "16px Inter",
+  lineHeight: 24,
+  getMaxWidth: (lineIndex, y) => {
+    // Return available width for this line based on obstacle geometry
+    return isObstacleAtY(y) ? 200 : 400;
+  },
+});
+```
+
+| Prop | Type | Required | Description |
+|------|------|----------|-------------|
+| `text` | `string` | Yes | Text content to lay out |
+| `font` | `string` | Yes | CSS font shorthand |
+| `lineHeight` | `number` | Yes | Line height in pixels |
+| `getMaxWidth` | `(lineIndex, y) => number` | Yes | Returns available width for each line |
+| `locale` | `string` | No | Locale for text segmentation |
+| `whiteSpace` | `"normal" \| "pre-wrap"` | No | Whitespace handling mode |
+| `maxLines` | `number` | No | Safety limit on iterations (default: 1000) |
+
+**Returns:** A `VariableLayoutResult` with `height`, `lineCount`, and `lines` (each line includes its `maxWidth`).
+
+---
+
+## computeLineRanges
+
+Iterates over line ranges without materializing line text. Useful for aggregate geometry calculations.
+
+```ts
+import { computeLineRanges } from "react-pretext";
+
+const lineCount = computeLineRanges({
+  text: "Hello world",
+  font: "16px Inter",
+  maxWidth: 300,
+  onLine: (range) => {
+    console.log(range.width, range.start, range.end);
+  },
+});
+```
+
+**Returns:** The total line count.
+
+---
+
+## profileLayout
+
+Returns performance profiling data for text preparation. Useful for debugging and benchmarking.
+
+```ts
+import { profileLayout } from "react-pretext";
+
+const profile = profileLayout({ text: "Hello world", font: "16px Inter" });
+console.log(profile.totalMs, profile.analysisSegments);
+```
+
+**Returns:** A `PrepareProfile` with `analysisMs`, `measureMs`, `totalMs`, `analysisSegments`, `preparedSegments`, `breakableSegments`.
+
+---
+
+## setLocale
+
+Sets the locale for text analysis (word/grapheme segmentation). Also clears the underlying measurement caches.
+
+```ts
+import { setLocale } from "react-pretext";
+
+setLocale("ja-JP");
+```

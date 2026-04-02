@@ -11,6 +11,7 @@ import { CodeEditorDemo } from "./pages/CodeEditorDemo.tsx";
 import { DataTableDemo } from "./pages/DataTableDemo.tsx";
 import { DebugDemo } from "./pages/DebugDemo.tsx";
 import { MasonryDemo } from "./pages/MasonryDemo.tsx";
+import { ObstacleDemo } from "./pages/ObstacleDemo.tsx";
 import { TooltipDemo } from "./pages/TooltipDemo.tsx";
 
 const PAGES = {
@@ -22,6 +23,7 @@ const PAGES = {
 	animation: { label: "Animation", component: AnimationDemo },
 	codeeditor: { label: "Code Editor", component: CodeEditorDemo },
 	cardgrid: { label: "Card Grid", component: CardGridDemo },
+	obstacle: { label: "Text Flow", component: ObstacleDemo },
 	tooltip: { label: "Tooltip", component: TooltipDemo },
 	datatable: { label: "Data Table", component: DataTableDemo },
 } as const;

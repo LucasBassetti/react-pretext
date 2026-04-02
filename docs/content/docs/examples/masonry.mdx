@@ -1,0 +1,39 @@
+---
+title: Masonry Layout
+description: Virtualized masonry grid with 1,904 cards — heights computed by react-pretext with zero DOM measurement.
+---
+
+import { Callout } from "fumadocs-ui/components/callout";
+
+<Callout>
+This demo uses `computeHeight()` to calculate the pixel height of every card without touching the DOM.
+Scroll to see virtualization in action — only visible cards are rendered.
+</Callout>
+
+<MasonryDemo />
+
+## How it works
+
+1. **`computeHeight()`** calculates the pixel height of each card's text content using cached character widths — no DOM measurement needed.
+2. A greedy column-packing algorithm places each card in the shortest column.
+3. Only cards within the scroll viewport (plus overscan) are rendered to the DOM.
+4. `Pretext.Root` and `Pretext.Lines` render each card's text with deterministic line breaks.
+
+```tsx
+import { Pretext, computeHeight } from "react-pretext";
+
+// Fast height calculation for layout
+const textHeight = computeHeight({
+  text: cardText,
+  font: '15px "Helvetica Neue", sans-serif',
+  maxWidth: columnWidth,
+  lineHeight: 22,
+});
+
+// Render with compound components
+<Pretext.Root text={cardText} width={columnWidth} font={font} lineHeight={22}>
+  <Pretext.Lines>
+    {(line) => <div key={line.key}>{line.text}</div>}
+  </Pretext.Lines>
+</Pretext.Root>
+```

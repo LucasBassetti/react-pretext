@@ -7,13 +7,25 @@ export { PretextProvider } from "./components/PretextProvider.js";
 
 // Hooks
 export { usePretextLayout } from "./hooks/usePretextLayout.js";
+export { usePretextVariableLayout } from "./hooks/usePretextVariableLayout.js";
 export { usePretextVirtualizer } from "./hooks/usePretextVirtualizer.js";
 export { useFontReady } from "./hooks/useFontReady.js";
 export { useResizeObserver } from "./hooks/useResizeObserver.js";
 
 // Core
-export { computeLayout, computeHeight } from "./core/layout.js";
-export { createCache, clearLayoutCache } from "./core/cache.js";
+export {
+	computeLayout,
+	computeHeight,
+	computePreparedText,
+	computeVariableLayout,
+	computeLineRanges,
+	profileLayout,
+	setLocale,
+} from "./core/layout.js";
+export { createCache, clearLayoutCache, clearAllCaches } from "./core/cache.js";
+
+// Low-level layout iterator (re-exported from @chenglou/pretext)
+export { layoutNextLine } from "@chenglou/pretext";
 
 // Renderers
 export { DomRenderer } from "./renderers/dom.js";
@@ -35,6 +47,15 @@ export type {
 	LayoutCursor,
 	LayoutResult,
 	LayoutLinesResult,
+	LayoutLineRange,
+	PrepareProfile,
+	WhiteSpaceMode,
+	ComputePreparedTextOptions,
+	ComputeVariableLayoutOptions,
+	VariableLayoutLine,
+	VariableLayoutResult,
+	ComputeLineRangesOptions,
+	ProfileLayoutOptions,
 } from "./core/types.js";
 
 export type { PretextHeightOptions } from "./core/layout.js";
@@ -44,6 +65,7 @@ export type { PretextLinesProps } from "./components/PretextLines.js";
 export type { PretextLineProps } from "./components/PretextLine.js";
 export type { PretextProviderProps } from "./components/PretextProvider.js";
 export type { UsePretextLayoutOptions } from "./hooks/usePretextLayout.js";
+export type { UsePretextVariableLayoutOptions } from "./hooks/usePretextVariableLayout.js";
 export type { Size } from "./hooks/useResizeObserver.js";
 export type { DomRendererProps } from "./renderers/dom.js";
 export type { SvgRendererProps } from "./renderers/svg.js";

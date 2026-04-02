@@ -1,7 +1,4 @@
 node_modules/
 dist/
-demo-dist/
-demo/demo-dist/
-dist-demo/
 .context/
 *.tsbuildinfo
