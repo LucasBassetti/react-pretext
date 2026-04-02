@@ -177,6 +177,20 @@ Returns:
 | `startIndex` | `number` | First visible index |
 | `endIndex` | `number` | Last visible index |
 
+#### `usePretextVariableLayout(options)`
+
+Computes variable-width layout where each line can have a different max width. Uses Provider context for defaults.
+
+```tsx
+import { usePretextVariableLayout } from "react-pretext";
+
+const layout = usePretextVariableLayout({
+  text: "Hello world",
+  lineHeight: 24,
+  getMaxWidth: (y) => (y < 100 ? 200 : 400),
+});
+```
+
 #### `useFontReady(font)`
 
 Returns `true` when the specified font is loaded and available.
@@ -232,6 +246,43 @@ const height = computeHeight({
 });
 ```
 
+#### `computePreparedText(text, options?)`
+
+SSR/locale-safe text preparation. Wraps `prepareWithSegments` so consumers never import from `@chenglou/pretext` directly.
+
+```ts
+import { computePreparedText } from "react-pretext";
+
+const prepared = computePreparedText("Hello world", { font: "16px Inter" });
+```
+
+#### `computeVariableLayout(options)`
+
+Per-line variable-width layout with a `getMaxWidth` callback. Enables text wrapping around obstacles.
+
+```ts
+import { computeVariableLayout } from "react-pretext";
+
+const result = computeVariableLayout({
+  text: "Hello world",
+  font: "16px Inter",
+  lineHeight: 24,
+  getMaxWidth: (y) => (y < 100 ? 200 : 400),
+});
+```
+
+#### `computeLineRanges(options)`
+
+Returns character ranges for each line without materializing line text.
+
+#### `profileLayout(options)`
+
+Profiles layout performance, returning timing data for the prepare and layout phases.
+
+#### `setLocale(locale)`
+
+Sets the locale used for text segmentation globally.
+
 #### `createCache(capacity?)`
 
 Creates a standalone LRU cache instance (default capacity: 500).
@@ -239,6 +290,10 @@ Creates a standalone LRU cache instance (default capacity: 500).
 #### `clearLayoutCache()`
 
 Clears the global layout cache.
+
+#### `clearAllCaches()`
+
+Clears both the layout cache and the height cache.
 
 ### Renderers
 
@@ -302,7 +357,7 @@ interface VirtualItem {
 }
 ```
 
-All types from `@chenglou/pretext` are re-exported: `PreparedText`, `PreparedTextWithSegments`, `LayoutLine`, `LayoutCursor`, `LayoutResult`, `LayoutLinesResult`.
+All types from `@chenglou/pretext` are re-exported: `PreparedText`, `PreparedTextWithSegments`, `LayoutLine`, `LayoutCursor`, `LayoutResult`, `LayoutLinesResult`, `LayoutLineRange`, `PrepareProfile`, `WhiteSpaceMode`, `VariableLayoutResult`, `VariableLayoutLine`.
 
 ## Performance
 
@@ -338,55 +393,24 @@ Pretext requires canvas for `prepare()`, which is unavailable on the server. On 
 
 For pixel-perfect SSR, pre-compute layouts at build time or use a Node canvas polyfill.
 
-## Demo
+## Documentation
 
 ```bash
-npm run dev
+pnpm docs:dev       # Fumadocs dev server (http://localhost:3000)
+pnpm docs:build     # Production build
 ```
 
-Opens a Vite dev server with four demo pages:
-
-- **Basic** — text input + width slider with both component patterns
-- **Chat UI** — virtualized list of 10,000 messages
-- **Canvas** — text rendered via `renderToCanvas()`
-- **Debug** — line box visualization with measurement data
-
-## Project Structure
-
-```
-src/
-  index.ts                    # Public API
-  core/
-    types.ts                  # TypeScript interfaces
-    cache.ts                  # LRU cache
-    layout.ts                 # computeLayout() + computeHeight()
-    context.ts                # React contexts
-  hooks/
-    usePretextLayout.ts       # Layout hook
-    usePretextVirtualizer.ts  # Virtualization hook
-    useFontReady.ts           # Font loading hook
-    useResizeObserver.ts      # ResizeObserver hook
-  components/
-    PretextRoot.tsx            # <Pretext.Root>
-    PretextLines.tsx           # <Pretext.Lines>
-    PretextLine.tsx            # <Pretext.Line>
-    PretextProvider.tsx        # <Pretext.Provider>
-  renderers/
-    dom.tsx                    # DOM renderer
-    svg.tsx                    # SVG renderer
-    canvas.ts                 # Canvas renderer
-  __tests__/                  # Vitest tests
-demo/                         # Vite demo app
-```
+Interactive examples (text flow, masonry layout) are embedded directly in the docs.
 
 ## Scripts
 
 ```bash
-npm run build       # Build ESM + CJS + .d.ts via tsup
-npm test            # Run tests via Vitest
-npm run lint        # Lint via Biome
-npm run format      # Format via Biome
-npm run dev         # Start demo dev server
+pnpm build          # Build ESM + CJS + .d.ts via tsup
+pnpm test           # Run tests via Vitest
+pnpm lint           # Lint via Biome
+pnpm format         # Format via Biome
+pnpm docs:dev       # Start docs dev server
+pnpm docs:build     # Build docs for production
 ```
 
 ## License

@@ -29,6 +29,9 @@
       ],
       "collections/*": [
         "./.source/*"
+      ],
+      "react-pretext": [
+        "../src/index.ts"
       ]
     }
   },
